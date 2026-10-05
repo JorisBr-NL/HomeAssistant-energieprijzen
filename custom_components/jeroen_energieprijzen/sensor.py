@@ -44,7 +44,7 @@ class JeroenSensorDescription(SensorEntityDescription):
     value_fn: Callable[[PriceData, datetime, PriceFn], float | datetime | None]
     native_unit_of_measurement: str | None = UNIT
     state_class: SensorStateClass | str | None = SensorStateClass.MEASUREMENT
-    suggested_display_precision: int | None = 4
+    suggested_display_precision: int | None = 2
     icon: str | None = "mdi:currency-eur"
     attrs_fn: Callable[[PriceData, datetime, PriceFn], dict[str, Any]] | None = None
 

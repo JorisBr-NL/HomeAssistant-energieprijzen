@@ -1,11 +1,11 @@
 # Jeroen.nl energieprijzen voor Home Assistant
 
-Leest de dynamische stroomprijzen van [jeroen.nl](https://jeroen.nl) in Home Assistant in: vandaag en (vanaf ca. 13:00) morgen, per kwartier. Idea by me, code by Claude.
+Leest de dynamische stroomprijzen van [jeroen.nl](https://jeroen.nl) in Home Assistant in: vandaag en (vanaf ca. 13:00) morgen, per kwartier.
 
 ## Installatie via HACS
 
 1. HACS → ⋮ → **Aangepaste repositories**
-2. URL: `https://github.com/JorisBr-NL/HomeAssistant-energieprijzen`, type **Integratie**
+2. URL: `https://github.com/JOUW-GEBRUIKERSNAAM/ha-jeroen-energieprijzen`, type **Integratie**
 3. Zoek **Jeroen.nl energieprijzen**, installeer en herstart Home Assistant
 4. **Instellingen → Apparaten en diensten → Integratie toevoegen → Jeroen.nl energieprijzen**
 5. Vul je API-sleutel in (het deel na `key=` in je API-URL)
@@ -30,7 +30,7 @@ Via **Configureren** op de integratie stel je in:
 - energiebelasting (EUR/kWh, excl. btw)
 - btw (%)
 
-Berekening: `(kale prijs + opslag + energiebelasting) × (1 + btw/100)`. Standaard staat alles op 0.
+Berekening: `(kale prijs + opslag + energiebelasting) × (1 + btw/100)`. Standaardwaarden: opslag € 0,016 (gemiddelde van Zonneplan, ANWB Energie en Frank Energie, excl. btw), energiebelasting € 0,09161 (2026, excl. btw) en btw 21%. Zet alles op 0 voor alleen de kale prijs. Let op: de energiebelasting verandert elk jaar per 1 januari.
 
 ## API-gebruik
 

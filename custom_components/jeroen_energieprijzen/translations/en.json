@@ -30,7 +30,7 @@
     "step": {
       "init": {
         "title": "All-in price",
-        "description": "Added to the bare price: (price + markup + energy tax) × (1 + VAT%). Leave at 0 for the bare price only.",
+        "description": "Added to the bare price: (price + markup + energy tax) × (1 + VAT%). Defaults: markup 0.016, energy tax 0.09161 (2026), VAT 21%. Set all to 0 for the bare price only.",
         "data": {
           "opslag": "Supplier markup (EUR/kWh, excl. VAT)",
           "energiebelasting": "Energy tax (EUR/kWh, excl. VAT)",

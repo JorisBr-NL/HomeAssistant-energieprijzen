@@ -1,12 +1,12 @@
 {
   "domain": "jeroen_energieprijzen",
   "name": "Jeroen.nl energieprijzen",
-  "codeowners": ["@JOUW-GEBRUIKERSNAAM"],
+  "codeowners": ["@JorisBr-NL"],
   "config_flow": true,
-  "documentation": "https://github.com/JOUW-GEBRUIKERSNAAM/ha-jeroen-energieprijzen",
+  "documentation": "https://github.com/JorisBr-NL/HomeAssistant-energieprijzen",
   "integration_type": "service",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/JOUW-GEBRUIKERSNAAM/ha-jeroen-energieprijzen/issues",
+  "issue_tracker": "https://github.com/JorisBr-NL/HomeAssistant-energieprijzen/issues",
   "requirements": [],
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import (
+    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
@@ -38,9 +39,13 @@ PriceFn = Callable[[float], float]
 
 @dataclass(frozen=True, kw_only=True)
 class JeroenSensorDescription(SensorEntityDescription):
-    """Describes a price sensor."""
+    """Describes a price or timestamp sensor."""
 
-    value_fn: Callable[[PriceData, datetime, PriceFn], float | None]
+    value_fn: Callable[[PriceData, datetime, PriceFn], float | datetime | None]
+    native_unit_of_measurement: str | None = UNIT
+    state_class: SensorStateClass | str | None = SensorStateClass.MEASUREMENT
+    suggested_display_precision: int | None = 4
+    icon: str | None = "mdi:currency-eur"
     attrs_fn: Callable[[PriceData, datetime, PriceFn], dict[str, Any]] | None = None
 
 
@@ -89,6 +94,21 @@ def _current_attrs(data: PriceData, now: datetime, fn: PriceFn) -> dict[str, Any
     }
 
 
+def _lowest_start(points: list[PricePoint]) -> datetime | None:
+    point = _extreme(points, lambda x: x, True)
+    return None if point is None else point.start
+
+
+def _lowest_moment_attrs(points: list[PricePoint], fn: PriceFn) -> dict[str, Any]:
+    point = _extreme(points, fn, True)
+    if point is None:
+        return {}
+    return {
+        "end": dt_util.as_local(point.end).isoformat(),
+        "price": round(fn(point.price), 5),
+    }
+
+
 def _excl(x: float) -> float:
     return x
 
@@ -120,6 +140,17 @@ SENSORS: tuple[JeroenSensorDescription, ...] = (
         attrs_fn=lambda d, now, fn: _extreme_attrs(d.today, True),
     ),
     JeroenSensorDescription(
+        key="goedkoopste_moment_vandaag",
+        name="Goedkoopste moment vandaag",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        native_unit_of_measurement=None,
+        state_class=None,
+        suggested_display_precision=None,
+        icon="mdi:clock-check-outline",
+        value_fn=lambda d, now, fn: _lowest_start(d.today),
+        attrs_fn=lambda d, now, fn: _lowest_moment_attrs(d.today, fn),
+    ),
+    JeroenSensorDescription(
         key="hoogste_prijs_vandaag",
         name="Hoogste prijs vandaag",
         value_fn=lambda d, now, fn: _pt_price(_extreme(d.today, fn, False), fn),
@@ -135,6 +166,17 @@ SENSORS: tuple[JeroenSensorDescription, ...] = (
         name="Laagste prijs morgen",
         value_fn=lambda d, now, fn: _pt_price(_extreme(d.tomorrow, fn, True), fn),
         attrs_fn=lambda d, now, fn: _extreme_attrs(d.tomorrow, True),
+    ),
+    JeroenSensorDescription(
+        key="goedkoopste_moment_morgen",
+        name="Goedkoopste moment morgen",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        native_unit_of_measurement=None,
+        state_class=None,
+        suggested_display_precision=None,
+        icon="mdi:clock-check-outline",
+        value_fn=lambda d, now, fn: _lowest_start(d.tomorrow),
+        attrs_fn=lambda d, now, fn: _lowest_moment_attrs(d.tomorrow, fn),
     ),
     JeroenSensorDescription(
         key="gemiddelde_prijs_morgen",
@@ -171,12 +213,8 @@ class JeroenPriceSensor(CoordinatorEntity[JeroenCoordinator], SensorEntity):
 
     entity_description: JeroenSensorDescription
     _attr_has_entity_name = True
-    _attr_native_unit_of_measurement = UNIT
-    _attr_state_class = SensorStateClass.MEASUREMENT
-    _attr_suggested_display_precision = 4
-    _attr_icon = "mdi:currency-eur"
     # The price lists are large; keep them out of the database.
-    _unrecorded_attributes = frozenset({"prices_today", "prices_tomorrow", "start", "end"})
+    _unrecorded_attributes = frozenset({"prices_today", "prices_tomorrow", "start", "end", "price"})
 
     def __init__(
         self,
@@ -204,7 +242,7 @@ class JeroenPriceSensor(CoordinatorEntity[JeroenCoordinator], SensorEntity):
         return lambda price: (price + markup + tax) * (1 + vat / 100)
 
     @property
-    def native_value(self) -> float | None:
+    def native_value(self) -> float | datetime | None:
         if self.coordinator.data is None:
             return None
         return self.entity_description.value_fn(

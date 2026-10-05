@@ -1,3 +1,5 @@
+<img src="brand/icon.png" alt="icoon" width="96" align="right">
+
 # Jeroen.nl energieprijzen voor Home Assistant
 
 Leest de dynamische stroomprijzen van [jeroen.nl](https://jeroen.nl) in Home Assistant in: vandaag en (vanaf ca. 13:00) morgen, per kwartier.
@@ -49,17 +51,127 @@ actions:
       entity_id: switch.vaatwasser
 ```
 
-## Voorbeeld: ApexCharts-kaart
+## Voorbeeld: dashboardkaart
+
+![Dashboardkaart met stroomprijzen](docs/dashboard.png)
+
+Drie tegels met de huidige prijs, de laagste prijs en het goedkoopste moment, met daaronder een grafiek van vandaag en morgen. Elk kwartier krijgt een kleur ten opzichte van het daggemiddelde: groen is meer dan 10% goedkoper, rood meer dan 10% duurder, oranje daartussen.
+
+Vereist: [apexcharts-card](https://github.com/RomRider/apexcharts-card) (HACS → Frontend). Controleer de entity-ID's bij jou via **Instellingen → Entiteiten**.
 
 ```yaml
-type: custom:apexcharts-card
-graph_span: 48h
-span:
-  start: day
-series:
-  - entity: sensor.jeroen_nl_energieprijzen_huidige_prijs
-    type: column
-    data_generator: |
-      return [...entity.attributes.prices_today, ...entity.attributes.prices_tomorrow]
-        .map(p => [new Date(p.start).getTime(), p.price]);
+type: vertical-stack
+cards:
+  - type: grid
+    columns: 3
+    square: false
+    cards:
+      - type: tile
+        entity: sensor.jeroen_nl_energieprijzen_huidige_prijs
+        name: Nu
+        icon: mdi:flash
+        color: amber
+        vertical: true
+      - type: tile
+        entity: sensor.jeroen_nl_energieprijzen_laagste_prijs_vandaag
+        name: Laagst
+        icon: mdi:arrow-down-bold
+        color: green
+        vertical: true
+      - type: tile
+        entity: sensor.jeroen_nl_energieprijzen_goedkoopste_moment_vandaag
+        name: Goedkoopst
+        icon: mdi:clock-check-outline
+        color: teal
+        vertical: true
+
+  - type: custom:apexcharts-card
+    graph_span: 48h
+    span:
+      start: day
+    now:
+      show: true
+      label: Nu
+    header:
+      show: true
+      title: Stroomprijs vandaag & morgen
+    all_series_config:
+      type: column
+      unit: €/kWh
+      float_precision: 3
+      show:
+        in_header: false
+        legend_value: false
+    yaxis:
+      - decimals: 2
+        apex_config:
+          tickAmount: 5
+    apex_config:
+      chart:
+        stacked: true
+        height: 280
+      plotOptions:
+        bar:
+          columnWidth: "95%"
+      dataLabels:
+        enabled: false
+      legend:
+        show: true
+        position: top
+      grid:
+        strokeDashArray: 3
+      xaxis:
+        labels:
+          datetimeFormatter:
+            hour: "HH:mm"
+      tooltip:
+        shared: false
+        x:
+          format: "dd MMM HH:mm"
+    series:
+      - entity: sensor.jeroen_nl_energieprijzen_huidige_prijs
+        name: Goedkoop
+        color: "#43a047"
+        data_generator: |
+          const all = [...(entity.attributes.prices_today || []), ...(entity.attributes.prices_tomorrow || [])];
+          const day = p => p.start.slice(0, 10);
+          const avg = {};
+          for (const d of new Set(all.map(day))) {
+            const xs = all.filter(p => day(p) === d).map(p => p.price);
+            avg[d] = xs.reduce((a, b) => a + b, 0) / xs.length;
+          }
+          return all.map(p => [new Date(p.start).getTime(),
+            p.price < avg[day(p)] * 0.9 ? p.price : null]);
+      - entity: sensor.jeroen_nl_energieprijzen_huidige_prijs
+        name: Normaal
+        color: "#fb8c00"
+        data_generator: |
+          const all = [...(entity.attributes.prices_today || []), ...(entity.attributes.prices_tomorrow || [])];
+          const day = p => p.start.slice(0, 10);
+          const avg = {};
+          for (const d of new Set(all.map(day))) {
+            const xs = all.filter(p => day(p) === d).map(p => p.price);
+            avg[d] = xs.reduce((a, b) => a + b, 0) / xs.length;
+          }
+          return all.map(p => [new Date(p.start).getTime(),
+            p.price >= avg[day(p)] * 0.9 && p.price <= avg[day(p)] * 1.1 ? p.price : null]);
+      - entity: sensor.jeroen_nl_energieprijzen_huidige_prijs
+        name: Duur
+        color: "#e53935"
+        data_generator: |
+          const all = [...(entity.attributes.prices_today || []), ...(entity.attributes.prices_tomorrow || [])];
+          const day = p => p.start.slice(0, 10);
+          const avg = {};
+          for (const d of new Set(all.map(day))) {
+            const xs = all.filter(p => day(p) === d).map(p => p.price);
+            avg[d] = xs.reduce((a, b) => a + b, 0) / xs.length;
+          }
+          return all.map(p => [new Date(p.start).getTime(),
+            p.price > avg[day(p)] * 1.1 ? p.price : null]);
 ```
+
+Pas `0.9` en `1.1` aan om de grenzen voor goedkoop en duur te verschuiven, en `graph_span: 24h` om alleen vandaag te tonen.
+
+## Icoon
+
+Het icoon in `brand/` is een eigen ontwerp voor deze integratie. Het is geen logo van jeroen.nl, en deze integratie is niet officieel van of verbonden aan jeroen.nl.

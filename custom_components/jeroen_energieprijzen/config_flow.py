@@ -43,7 +43,7 @@ KEY_SCHEMA = vol.Schema(
 
 def _price_selector() -> NumberSelector:
     return NumberSelector(
-        NumberSelectorConfig(min=0, max=5, step=0.00001, mode=NumberSelectorMode.BOX, unit_of_measurement="EUR/kWh")
+        NumberSelectorConfig(min=0, max=5, step="any", mode=NumberSelectorMode.BOX, unit_of_measurement="EUR/kWh")
     )
 
 

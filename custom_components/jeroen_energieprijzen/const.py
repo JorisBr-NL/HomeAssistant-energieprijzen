@@ -14,9 +14,11 @@ CONF_MARKUP = "opslag"
 CONF_ENERGY_TAX = "energiebelasting"
 CONF_VAT = "btw"
 
-DEFAULT_MARKUP = 0.0
-DEFAULT_ENERGY_TAX = 0.0
-DEFAULT_VAT = 0.0
+# Defaults (2026, excl. btw): average supplier markup (Zonneplan/ANWB/Frank),
+# energiebelasting 2026 and Dutch VAT.
+DEFAULT_MARKUP = 0.016
+DEFAULT_ENERGY_TAX = 0.09161
+DEFAULT_VAT = 21.0
 
 # How often the coordinator checks whether new data must be fetched.
 # Data that is already complete is cached, so the API is only called

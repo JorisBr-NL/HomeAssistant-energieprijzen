@@ -1,11 +1,11 @@
 # Jeroen.nl energieprijzen voor Home Assistant
 
-Leest de dynamische stroomprijzen van [jeroen.nl](https://jeroen.nl) in Home Assistant in: vandaag en (vanaf ca. 13:00) morgen, per kwartier.
+Leest de dynamische stroomprijzen van [jeroen.nl](https://jeroen.nl) in Home Assistant in: vandaag en (vanaf ca. 13:00) morgen, per kwartier. Idea by me, code by Claude.
 
 ## Installatie via HACS
 
 1. HACS → ⋮ → **Aangepaste repositories**
-2. URL: `https://github.com/JOUW-GEBRUIKERSNAAM/ha-jeroen-energieprijzen`, type **Integratie**
+2. URL: `https://github.com/JorisBr-NL/HomeAssistant-energieprijzen`, type **Integratie**
 3. Zoek **Jeroen.nl energieprijzen**, installeer en herstart Home Assistant
 4. **Instellingen → Apparaten en diensten → Integratie toevoegen → Jeroen.nl energieprijzen**
 5. Vul je API-sleutel in (het deel na `key=` in je API-URL)

@@ -2,6 +2,43 @@
 
 # Jeroen.nl energieprijzen voor Home Assistant
 
+> [!WARNING]
+> **Deze integratie wordt niet meer onderhouden.** Gebruik voortaan **[Jeroen.nl (ha-jeroen-nl)](https://github.com/JorisBr-NL/ha-jeroen-nl)**. Die heeft dezelfde prijssensoren, plus de prijsvoorspelling voor de komende dagen, de gasprijs en de opwekvoorspelling van je zonnepanelen.
+>
+> Versie 1.1.0 blijft gewoon werken, maar toont een melding onder **Instellingen → Systeem → Reparaties**. Over een paar maanden wordt deze repository gearchiveerd (alleen-lezen); bestaande installaties blijven dan werken, maar er komen geen updates meer. Zie [Overstappen naar Jeroen.nl](#overstappen-naar-jeroennl) hieronder.
+
+## Overstappen naar Jeroen.nl
+
+1. **Installeer** in HACS → ⋮ → *Aangepaste repositories* → `https://github.com/JorisBr-NL/ha-jeroen-nl`, type *Integratie*. Installeer **Jeroen.nl** en herstart Home Assistant.
+2. **Voeg toe** via **Instellingen → Apparaten en diensten → Integratie toevoegen → Jeroen.nl**, met een API-sleutel van jeroen.nl. Maak bij voorkeur een nieuwe sleutel aan, dan kun je de oude later intrekken.
+3. **Neem je tarieven over** via *Configureren*. De standaardwaarden verschillen:
+
+   | Deze integratie | Jeroen.nl | Standaard hier → daar |
+   |---|---|---|
+   | opslag | Opslag stroom | 0,016 → 0,02 |
+   | energiebelasting | Energiebelasting stroom | 0,09161 (2026) → 0,08802 (2027) |
+   | btw | Btw | 21 → 21 |
+
+   Alle bedragen zijn exclusief btw. Vul dezelfde waarden in als je hier had, dan zijn de prijzen gelijk.
+4. **Zet automations en dashboards over** naar de nieuwe entiteiten. Met Home Assistant in het Nederlands:
+
+   | Deze integratie (`sensor.jeroen_nl_energieprijzen_…`) | Jeroen.nl (`sensor.jeroen_nl_…`) |
+   |---|---|
+   | `huidige_prijs` | `stroomprijs` |
+   | `huidige_prijs_excl_belastingen` | `stroomprijs_markt` |
+   | `volgende_prijs` | `volgende_prijs` |
+   | `laagste_prijs_vandaag` / `hoogste_prijs_vandaag` / `gemiddelde_prijs_vandaag` | idem |
+   | `goedkoopste_moment_vandaag` | `goedkoopste_moment_vandaag` |
+   | `laagste_prijs_morgen` / `gemiddelde_prijs_morgen` | idem (plus nieuw: `hoogste_prijs_morgen`) |
+   | `goedkoopste_moment_morgen` | `goedkoopste_moment_morgen` |
+
+   Attributen van de stroomprijssensor: `prices_today` → `today`, `prices_tomorrow` → `tomorrow`, `tomorrow_available` blijft. Elke regel heeft nog steeds `start`, `end` en `price`, plus `market`. Nieuw is `prices`: de vastgestelde kwartieren vanaf nu, gevolgd door de voorspelling. De README van Jeroen.nl heeft een dashboardkaart in dezelfde stijl, met de voorspelling erbij.
+5. **Verwijder** daarna deze integratie (Instellingen → Apparaten en diensten → Jeroen.nl energieprijzen → ⋮ → Verwijderen). De melding onder Reparaties verdwijnt dan ook.
+
+Let op: beide integraties tellen mee voor dezelfde grens van 10 aanroepen per dag per soort data van je jeroen.nl-account. Laat ze dus niet langer dan nodig naast elkaar draaien.
+
+---
+
 Leest de dynamische stroomprijzen van [jeroen.nl](https://jeroen.nl) in Home Assistant in: vandaag en (vanaf ca. 13:00) morgen, per kwartier.
 
 ## Installatie via HACS

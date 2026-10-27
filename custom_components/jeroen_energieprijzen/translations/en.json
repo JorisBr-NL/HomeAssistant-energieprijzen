@@ -38,5 +38,11 @@
         }
       }
     }
+  },
+  "issues": {
+    "deprecated_integration": {
+      "title": "Jeroen.nl energieprijzen is deprecated",
+      "description": "This integration is no longer maintained and has been replaced by the **Jeroen.nl** integration ({url}). It offers the same price sensors plus the price forecast, the gas price and the solar forecast.\n\nInstall Jeroen.nl via HACS, add it with your jeroen.nl API key, switch your automations and dashboards to the new sensors, and then remove this integration. The migration guide is in the README of this repository."
+    }
   }
 }

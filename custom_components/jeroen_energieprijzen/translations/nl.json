@@ -38,5 +38,11 @@
         }
       }
     }
+  },
+  "issues": {
+    "deprecated_integration": {
+      "title": "Jeroen.nl energieprijzen wordt niet meer onderhouden",
+      "description": "Deze integratie is vervangen door de integratie **Jeroen.nl** ({url}). Die heeft dezelfde prijssensoren, plus de prijsvoorspelling, de gasprijs en de opwekvoorspelling.\n\nInstalleer Jeroen.nl via HACS, voeg hem toe met je API-sleutel van jeroen.nl, zet je automations en dashboards over naar de nieuwe sensoren en verwijder daarna deze integratie. De overstaphandleiding staat in de README van deze repository."
+    }
   }
 }
